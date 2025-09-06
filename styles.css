@@ -887,3 +887,252 @@ footer {
 .success-message {
     display: none !important;
 }
+
+/* Game section styles */
+.game-container-wrapper {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 30px;
+    border-radius: 20px;
+    background: var(--secondary-color);
+    box-shadow: 8px 8px 16px var(--shadow-dark), -8px -8px 16px var(--shadow-light);
+}
+
+.score-board {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 30px;
+    font-size: 1.2em;
+    color: var(--primary-color);
+    font-weight: 600;
+}
+
+.slot-machine {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin-bottom: 40px;
+    padding: 20px;
+    background: var(--secondary-color);
+    border-radius: 15px;
+    box-shadow: inset 5px 5px 10px var(--shadow-dark), inset -5px -5px 10px var(--shadow-light);
+}
+
+.slot {
+    width: 80px;
+    height: 80px;
+    background: var(--secondary-color);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2em;
+    box-shadow: 5px 5px 10px var(--shadow-dark), -5px -5px 10px var(--shadow-light);
+    position: relative;
+    overflow: hidden;
+}
+
+.slot-reel {
+    position: absolute;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    top: 0;
+    left: 0;
+}
+
+.slot-symbol {
+    width: 80px;
+    height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2em;
+    flex-shrink: 0;
+    line-height: 1;
+}
+
+/* Individual slot animations with different durations */
+.slot:nth-child(1) .slot-reel.spinning {
+    animation: slotSpin1 3s cubic-bezier(0.23, 1, 0.32, 1) forwards;
+}
+
+.slot:nth-child(2) .slot-reel.spinning {
+    animation: slotSpin2 3.5s cubic-bezier(0.23, 1, 0.32, 1) forwards;
+}
+
+.slot:nth-child(3) .slot-reel.spinning {
+    animation: slotSpin3 4s cubic-bezier(0.23, 1, 0.32, 1) forwards;
+}
+
+.slot:nth-child(4) .slot-reel.spinning {
+    animation: slotSpin4 4.5s cubic-bezier(0.23, 1, 0.32, 1) forwards;
+}
+
+@keyframes slotSpin1 {
+    0% { transform: translateY(0); }
+    100% { transform: translateY(-1600px); }
+}
+
+@keyframes slotSpin2 {
+    0% { transform: translateY(0); }
+    100% { transform: translateY(-1600px); }
+}
+
+@keyframes slotSpin3 {
+    0% { transform: translateY(0); }
+    100% { transform: translateY(-1600px); }
+}
+
+@keyframes slotSpin4 {
+    0% { transform: translateY(0); }
+    100% { transform: translateY(-1600px); }
+}
+
+.question-area {
+    text-align: center;
+    margin-bottom: 30px;
+    margin-top: 20px;
+    min-height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.question-text {
+    font-size: 1.5em;
+    color: var(--primary-color);
+    font-weight: 600;
+}
+
+.answers {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+    margin-bottom: 30px;
+    min-height: 140px;
+}
+
+.answer-btn {
+    padding: 15px 20px;
+    font-size: 1.1em;
+    border: none;
+    border-radius: 10px;
+    background: var(--secondary-color);
+    color: var(--text-color);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 5px 5px 10px var(--shadow-dark), -5px -5px 10px var(--shadow-light);
+}
+
+.answer-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 8px 8px 16px var(--shadow-dark), -8px -8px 16px var(--shadow-light);
+}
+
+.answer-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.answer-btn.correct {
+    background: #4CAF50;
+    color: white;
+    box-shadow: inset 3px 3px 5px rgba(0, 0, 0, 0.2), inset -3px -3px 5px rgba(255, 255, 255, 0.1);
+}
+
+.answer-btn.incorrect {
+    background: #f44336;
+    color: white;
+    box-shadow: inset 3px 3px 5px rgba(0, 0, 0, 0.2), inset -3px -3px 5px rgba(255, 255, 255, 0.1);
+}
+
+.controls {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin: 20px 0;
+    min-height: 50px;
+    align-items: center;
+}
+
+.game-btn {
+    padding: 12px 24px;
+    font-size: 1.1em;
+    border: none;
+    border-radius: 15px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    background: var(--primary-color);
+    color: white;
+    font-weight: 600;
+    min-width: 120px;
+    box-shadow: 5px 5px 10px var(--shadow-dark), -5px -5px 10px var(--shadow-light);
+}
+
+.game-btn:hover {
+    background: var(--hover-color);
+    transform: translateY(-2px);
+}
+
+.game-btn:disabled {
+    background: #e0e0e0;
+    color: #a0a0a0;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+.feedback {
+    text-align: center;
+    font-size: 1.2em;
+    font-weight: bold;
+    color: var(--primary-color);
+}
+
+.feedback.correct {
+    color: #4CAF50;
+}
+
+.feedback.incorrect {
+    color: #f44336;
+}
+
+.game-over {
+    text-align: center;
+    background: var(--secondary-color);
+    padding: 30px;
+    border-radius: 15px;
+    margin-top: 20px;
+    box-shadow: 5px 5px 10px var(--shadow-dark), -5px -5px 10px var(--shadow-light);
+}
+
+.game-over h2 {
+    margin-bottom: 15px;
+    font-size: 2em;
+    color: var(--primary-color);
+}
+
+@media (max-width: 600px) {
+    .slot-machine {
+        gap: 10px;
+    }
+    
+    .slot {
+        width: 60px;
+        height: 60px;
+        font-size: 1.5em;
+    }
+    
+    .slot-symbol {
+        width: 60px;
+        height: 60px;
+        font-size: 1.5em;
+    }
+    
+    .answers {
+        grid-template-columns: 1fr;
+        min-height: 280px;
+    }
+}

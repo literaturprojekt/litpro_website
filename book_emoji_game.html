@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>📚 Book Emoji Slot Machine</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f0f0f0;
+            color: #333;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .game-container {
+            background: #f0f0f0;
+            border-radius: 20px;
+            padding: 30px;
+            max-width: 800px;
+            width: 100%;
+            min-height: 700px;
+            box-shadow: 8px 8px 16px #d1d9e6, -8px -8px 16px #ffffff;
+            display: flex;
+            flex-direction: column;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+            color: #2F4F4F;
+        }
+
+        .score-board {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 30px;
+            font-size: 1.2em;
+        }
+
+        .slot-machine {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 40px;
+            padding: 20px;
+            background: #f0f0f0;
+            border-radius: 15px;
+            box-shadow: inset 5px 5px 10px #d1d9e6, inset -5px -5px 10px #ffffff;
+        }
+
+        .slot {
+            width: 80px;
+            height: 80px;
+            background: #f0f0f0;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2em;
+            box-shadow: 5px 5px 10px #d1d9e6, -5px -5px 10px #ffffff;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .slot-reel {
+            position: absolute;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            top: 0;
+            left: 0;
+        }
+
+        .slot-symbol {
+            width: 80px;
+            height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2em;
+            flex-shrink: 0;
+            line-height: 1;
+        }
+
+        /* Individual slot animations with different durations */
+        .slot:nth-child(1) .slot-reel.spinning {
+            animation: slotSpin1 3s cubic-bezier(0.23, 1, 0.32, 1) forwards;
+        }
+
+        .slot:nth-child(2) .slot-reel.spinning {
+            animation: slotSpin2 3.5s cubic-bezier(0.23, 1, 0.32, 1) forwards;
+        }
+
+        .slot:nth-child(3) .slot-reel.spinning {
+            animation: slotSpin3 4s cubic-bezier(0.23, 1, 0.32, 1) forwards;
+        }
+
+        .slot:nth-child(4) .slot-reel.spinning {
+            animation: slotSpin4 4.5s cubic-bezier(0.23, 1, 0.32, 1) forwards;
+        }
+
+        @keyframes slotSpin1 {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(-1600px); }
+        }
+
+        @keyframes slotSpin2 {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(-1600px); }
+        }
+
+        @keyframes slotSpin3 {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(-1600px); }
+        }
+
+        @keyframes slotSpin4 {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(-1600px); }
+        }
+
+        .question-area {
+            text-align: center;
+            margin-bottom: 30px;
+            margin-top: 20px;
+            min-height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .question-text {
+            font-size: 1.5em;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+        }
+
+        .answers {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 30px;
+            min-height: 140px;
+        }
+
+        .answer-btn {
+            padding: 15px 20px;
+            font-size: 1.1em;
+            border: none;
+            border-radius: 10px;
+            background: #f0f0f0;
+            color: #333;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 5px 5px 10px #d1d9e6, -5px -5px 10px #ffffff;
+        }
+
+        .answer-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 8px 8px 16px #d1d9e6, -8px -8px 16px #ffffff;
+        }
+
+        .answer-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .answer-btn.correct {
+            background: #4CAF50;
+            color: white;
+            box-shadow: inset 3px 3px 5px rgba(0, 0, 0, 0.2), inset -3px -3px 5px rgba(255, 255, 255, 0.1);
+        }
+
+        .answer-btn.incorrect {
+            background: #f44336;
+            color: white;
+            box-shadow: inset 3px 3px 5px rgba(0, 0, 0, 0.2), inset -3px -3px 5px rgba(255, 255, 255, 0.1);
+        }
+
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin: 20px 0;
+            min-height: 50px;
+            align-items: center;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            font-size: 1.1em;
+            border: none;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: #2F4F4F;
+            color: white;
+            font-weight: 600;
+            min-width: 120px;
+            box-shadow: 5px 5px 10px #d1d9e6, -5px -5px 10px #ffffff;
+        }
+
+        .btn:hover {
+            background: #5BA3A3;
+            transform: translateY(-2px);
+        }
+
+        .btn:disabled {
+            background: #e0e0e0;
+            color: #a0a0a0;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .feedback {
+            text-align: center;
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #2F4F4F;
+        }
+
+        .feedback.correct {
+            color: #4CAF50;
+        }
+
+        .feedback.incorrect {
+            color: #f44336;
+        }
+
+        .game-over {
+            text-align: center;
+            background: #f0f0f0;
+            padding: 30px;
+            border-radius: 15px;
+            margin-top: 20px;
+            box-shadow: 5px 5px 10px #d1d9e6, -5px -5px 10px #ffffff;
+        }
+
+        .game-over h2 {
+            margin-bottom: 15px;
+            font-size: 2em;
+            color: #2F4F4F;
+        }
+
+        @media (max-width: 600px) {
+            .slot-machine {
+                gap: 10px;
+            }
+            
+            .slot {
+                width: 60px;
+                height: 60px;
+                font-size: 1.5em;
+            }
+            
+            .slot-symbol {
+                width: 60px;
+                height: 60px;
+                font-size: 1.5em;
+            }
+            
+            .answers {
+                grid-template-columns: 1fr;
+                min-height: 280px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <h1>📚 Book Emoji Slot Machine</h1>
+        
+        <div class="score-board">
+            <div>Score: <span id="score">0</span></div>
+            <div class="feedback" id="feedback"></div>
+            <div>Round: <span id="round">1</span>/10</div>
+        </div>
+
+        <div class="slot-machine">
+            <div class="slot" id="slot1">
+                <div class="slot-reel" id="reel1"></div>
+            </div>
+            <div class="slot" id="slot2">
+                <div class="slot-reel" id="reel2"></div>
+            </div>
+            <div class="slot" id="slot3">
+                <div class="slot-reel" id="reel3"></div>
+            </div>
+            <div class="slot" id="slot4">
+                <div class="slot-reel" id="reel4"></div>
+            </div>
+        </div>
+
+        <div class="controls">
+            <button class="btn" id="spinBtn" onclick="spinSlots()">🎰 Drehen!</button>
+            <button class="btn" id="nextBtn" onclick="nextRound()" style="display: none;">Nächste Runde</button>
+        </div>
+
+
+        <div class="question-area">
+            <div class="question-text">Drehe die Slots und errate das Buch!</div>
+        </div>
+
+        <div class="answers" id="answers"></div>
+
+        <div class="game-over" id="gameOver" style="display: none;">
+            <h2>🎉 Spiel beendet!</h2>
+            <p>Endergebnis: <span id="finalScore"></span>/10</p>
+            <button class="btn" onclick="restartGame()">Nochmal spielen</button>
+        </div>
+    </div>
+
+    <script src="books-emoji-data.js"></script>
+    <script>
+        const books = emojiGamesData;
+
+        // Pool of random emojis for slot machine effect
+        const randomEmojis = ["🎰", "🎲", "🎯", "🎪", "🎭", "🎨", "🎬", "🎵", "🎸", "🎺", "🎻", "🎹", "🎤", "🎧", "🎮", "🃏", "🎨", "🎯", "🎪", "🎭"];
+
+        let currentRound = 1;
+        let score = 0;
+        let currentBook = null;
+        let gameActive = false;
+
+        function createSlotReel(reelElement, finalEmoji) {
+            reelElement.innerHTML = '';
+            
+            // Create symbols for the spinning effect
+            const symbols = [];
+            
+            // Start with 🎰 (this will be visible initially)
+            symbols.push('🎰');
+            
+            // Add random symbols for spinning effect (19 more symbols)
+            for (let i = 0; i < 19; i++) {
+                symbols.push(randomEmojis[Math.floor(Math.random() * randomEmojis.length)]);
+            }
+            
+            // Add the correct final emoji at the end (this is the book's emoji)
+            symbols.push(finalEmoji);
+            
+            // Create HTML for all symbols
+            symbols.forEach(symbol => {
+                const symbolDiv = document.createElement('div');
+                symbolDiv.className = 'slot-symbol';
+                symbolDiv.textContent = symbol;
+                reelElement.appendChild(symbolDiv);
+            });
+            
+            // Start at position 0 (showing the first 🎰 symbol)
+            reelElement.style.transform = 'translateY(0)';
+        }
+
+        function getRandomBooks(correctBook, count = 4) {
+            const others = books.filter(b => b.title !== correctBook.title);
+            const randomOthers = [];
+            
+            while (randomOthers.length < count - 1) {
+                const random = others[Math.floor(Math.random() * others.length)];
+                if (!randomOthers.includes(random)) {
+                    randomOthers.push(random);
+                }
+            }
+            
+            const allOptions = [correctBook, ...randomOthers];
+            return shuffleArray(allOptions);
+        }
+
+        function shuffleArray(array) {
+            const newArray = [...array];
+            for (let i = newArray.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
+            }
+            return newArray;
+        }
+
+        function spinSlots() {
+            if (gameActive) return;
+            
+            gameActive = true;
+            document.getElementById('spinBtn').style.display = 'none';
+            const feedbackEl = document.getElementById('feedback');
+            feedbackEl.textContent = '';
+            feedbackEl.className = 'feedback';
+            
+            // Select random book FIRST
+            currentBook = books[Math.floor(Math.random() * books.length)];
+            
+            // Setup reels with the correct final emojis for the selected book
+            for (let i = 1; i <= 4; i++) {
+                const reel = document.getElementById(`reel${i}`);
+                const finalEmoji = currentBook.emojis[i - 1] || '❓';
+                
+                // Create reel: 🎰 -> random emojis -> correct book emoji
+                createSlotReel(reel, finalEmoji);
+                
+                // Start spinning animation on the reel itself
+                reel.classList.add('spinning');
+            }
+            
+            // Show question and answers after all animations complete
+            setTimeout(() => {
+                showQuestion();
+            }, 5000); // Wait for the longest animation (4.5s) + buffer
+        }
+
+        function showQuestion() {
+            document.querySelector('.question-text').textContent = 'Welches Buch stellen diese Emojis dar?';
+            
+            const options = getRandomBooks(currentBook);
+            const answersDiv = document.getElementById('answers');
+            answersDiv.innerHTML = '';
+            
+            options.forEach((book, index) => {
+                const btn = document.createElement('button');
+                btn.className = 'answer-btn';
+                btn.textContent = `${String.fromCharCode(65 + index)}. ${book.title}`;
+                btn.onclick = () => selectAnswer(book, btn);
+                answersDiv.appendChild(btn);
+            });
+        }
+
+        function selectAnswer(selectedBook, buttonElement) {
+            const allButtons = document.querySelectorAll('.answer-btn');
+            allButtons.forEach(btn => btn.disabled = true);
+            
+            if (selectedBook.title === currentBook.title) {
+                buttonElement.classList.add('correct');
+                score++;
+                document.getElementById('score').textContent = score;
+                const feedbackEl = document.getElementById('feedback');
+                feedbackEl.textContent = '🎉 Richtig! Gut gemacht!';
+                feedbackEl.className = 'feedback correct';
+            } else {
+                buttonElement.classList.add('incorrect');
+                // Show correct answer
+                allButtons.forEach(btn => {
+                    if (btn.textContent.includes(currentBook.title)) {
+                        btn.classList.add('correct');
+                    }
+                });
+                const feedbackEl = document.getElementById('feedback');
+                feedbackEl.textContent = `❌ Falsch! Die richtige Antwort war "${currentBook.title}"`;
+                feedbackEl.className = 'feedback incorrect';
+            }
+            
+            setTimeout(() => {
+                if (currentRound < 10) {
+                    document.getElementById('nextBtn').style.display = 'inline-block';
+                } else {
+                    endGame();
+                }
+            }, 2000);
+        }
+
+        function nextRound() {
+            currentRound++;
+            document.getElementById('round').textContent = currentRound;
+            
+            // Reset UI
+            document.getElementById('nextBtn').style.display = 'none';
+            document.getElementById('spinBtn').style.display = 'inline-block';
+            document.getElementById('answers').innerHTML = '';
+            const feedbackEl = document.getElementById('feedback');
+            feedbackEl.textContent = '';
+            feedbackEl.className = 'feedback';
+            document.querySelector('.question-text').textContent = 'Drehe die Slots und errate das Buch!';
+            
+            // Reset slots to show 🎰
+            for (let i = 1; i <= 4; i++) {
+                const reel = document.getElementById(`reel${i}`);
+                reel.classList.remove('spinning');
+                createSlotReel(reel, '🎰');
+            }
+            
+            gameActive = false;
+        }
+
+        function endGame() {
+            document.getElementById('gameOver').style.display = 'block';
+            document.getElementById('finalScore').textContent = score;
+            
+            let message = '';
+            if (score >= 8) message = '🏆 Ausgezeichnet! Du bist ein Buchexperte!';
+            else if (score >= 6) message = '👍 Großartig! Du kennst deine Bücher gut!';
+            else if (score >= 4) message = '📚 Nicht schlecht! Lies weiter mehr Bücher!';
+            else message = '🤔 Zeit, öfter in die Bibliothek zu gehen!';
+            
+            document.getElementById('gameOver').innerHTML += `<p>${message}</p>`;
+        }
+
+        function restartGame() {
+            currentRound = 1;
+            score = 0;
+            gameActive = false;
+            
+            document.getElementById('round').textContent = currentRound;
+            document.getElementById('score').textContent = score;
+            document.getElementById('gameOver').style.display = 'none';
+            document.getElementById('spinBtn').style.display = 'inline-block';
+            document.getElementById('nextBtn').style.display = 'none';
+            document.getElementById('answers').innerHTML = '';
+            const feedbackEl = document.getElementById('feedback');
+            feedbackEl.textContent = '';
+            feedbackEl.className = 'feedback';
+            document.querySelector('.question-text').textContent = 'Drehe die Slots und errate das Buch!';
+            
+            // Reset all slots to show 🎰
+            for (let i = 1; i <= 4; i++) {
+                const reel = document.getElementById(`reel${i}`);
+                reel.classList.remove('spinning');
+                createSlotReel(reel, '🎰');
+            }
+        }
+
+        // Initialize game
+        document.addEventListener('DOMContentLoaded', function() {
+            for (let i = 1; i <= 4; i++) {
+                const reel = document.getElementById(`reel${i}`);
+                createSlotReel(reel, '🎰');
+            }
+        });
+    </script>
+</body>
+</html>

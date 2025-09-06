@@ -22,6 +22,7 @@
             <div class="nav-item active" data-section="home">Startseite</div>
             <div class="nav-item" data-section="concept">Das Konzept</div>
             <div class="nav-item" data-section="books">Unsere Bücher</div>
+            <div class="nav-item" data-section="game">Emoji-Spiel</div>
             <div class="nav-item" data-section="stats">Statistiken</div>
             <div class="nav-item" data-section="contact">Kontakt</div>
         </nav>
@@ -189,6 +190,52 @@
             </div>
         </section>
 
+        <section id="game" class="section">
+            <h2>📚 Book Emoji Slot Machine</h2>
+            <p style="text-align: center; margin-bottom: 30px;">Teste dein Wissen über Bücher mit unserem interaktiven Emoji-Spiel! Erkenne die Bücher anhand der Emoji-Symbole.</p>
+            
+            <div class="game-container-wrapper">
+                <div class="score-board">
+                    <div>Score: <span id="score">0</span></div>
+                    <div class="feedback" id="feedback"></div>
+                    <div>Round: <span id="round">1</span>/10</div>
+                </div>
+
+                <div class="slot-machine">
+                    <div class="slot" id="slot1">
+                        <div class="slot-reel" id="reel1"></div>
+                    </div>
+                    <div class="slot" id="slot2">
+                        <div class="slot-reel" id="reel2"></div>
+                    </div>
+                    <div class="slot" id="slot3">
+                        <div class="slot-reel" id="reel3"></div>
+                    </div>
+                    <div class="slot" id="slot4">
+                        <div class="slot-reel" id="reel4"></div>
+                    </div>
+                </div>
+
+                <div class="controls">
+                    <button class="btn game-btn" id="spinBtn" onclick="spinSlots()">🎰 Drehen!</button>
+                    <button class="btn game-btn" id="nextBtn" onclick="nextRound()" style="display: none;">Nächste Runde</button>
+                </div>
+
+
+                <div class="question-area">
+                    <div class="question-text">Drehe die Slots und errate das Buch!</div>
+                </div>
+
+                <div class="answers" id="answers"></div>
+
+                <div class="game-over" id="gameOver" style="display: none;">
+                    <h2>🎉 Spiel beendet!</h2>
+                    <p>Endergebnis: <span id="finalScore"></span>/10</p>
+                    <button class="btn game-btn" onclick="restartGame()">Nochmal spielen</button>
+                </div>
+            </div>
+        </section>
+
         <section id="stats" class="section">
             <h2>Statistiken unserer Leseaktivitäten</h2>
             
@@ -273,6 +320,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.1/papaparse.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/4.0.2/marked.min.js"></script>
+    <script src="books-emoji-data.js"></script>
     <script src="script.js"></script>
 </body>
 </html>

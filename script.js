@@ -25,6 +25,12 @@ document.addEventListener('DOMContentLoaded', function() {
             sections.forEach(section => {
                 if (section.id === target) {
                     section.classList.add('active');
+                    // Initialize game when game section becomes active
+                    if (target === 'game') {
+                        setTimeout(() => {
+                            initializeGame();
+                        }, 100);
+                    }
                 } else {
                     section.classList.remove('active');
                 }
@@ -619,4 +625,219 @@ function generateGenresChart() {
             }
         }
     });
+}
+
+// Emoji Game Functions
+// Load books data from external file
+// Note: books-data.js should be loaded before this script in index.html
+const books = typeof emojiGamesData !== 'undefined' ? emojiGamesData : [];
+
+// Pool of random emojis for slot machine effect
+const randomEmojis = ["🎰", "🎲", "🎯", "🎪", "🎭", "🎨", "🎬", "🎵", "🎸", "🎺", "🎻", "🎹", "🎤", "🎧", "🎮", "🃏", "🎨", "🎯", "🎪", "🎭"];
+
+let currentRound = 1;
+let score = 0;
+let currentBook = null;
+let gameActive = false;
+
+function createSlotReel(reelElement, finalEmoji) {
+    reelElement.innerHTML = '';
+    
+    // Create symbols for the spinning effect
+    const symbols = [];
+    
+    // Start with 🎰 (this will be visible initially)
+    symbols.push('🎰');
+    
+    // Add random symbols for spinning effect (19 more symbols)
+    for (let i = 0; i < 19; i++) {
+        symbols.push(randomEmojis[Math.floor(Math.random() * randomEmojis.length)]);
+    }
+    
+    // Add the correct final emoji at the end (this is the book's emoji)
+    symbols.push(finalEmoji);
+    
+    // Create HTML for all symbols
+    symbols.forEach(symbol => {
+        const symbolDiv = document.createElement('div');
+        symbolDiv.className = 'slot-symbol';
+        symbolDiv.textContent = symbol;
+        reelElement.appendChild(symbolDiv);
+    });
+    
+    // Start at position 0 (showing the first 🎰 symbol)
+    reelElement.style.transform = 'translateY(0)';
+}
+
+function getRandomBooks(correctBook, count = 4) {
+    const others = books.filter(b => b.title !== correctBook.title);
+    const randomOthers = [];
+    
+    while (randomOthers.length < count - 1) {
+        const random = others[Math.floor(Math.random() * others.length)];
+        if (!randomOthers.includes(random)) {
+            randomOthers.push(random);
+        }
+    }
+    
+    const allOptions = [correctBook, ...randomOthers];
+    return shuffleArray(allOptions);
+}
+
+function shuffleArray(array) {
+    const newArray = [...array];
+    for (let i = newArray.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
+    }
+    return newArray;
+}
+
+function spinSlots() {
+    if (gameActive) return;
+    
+    gameActive = true;
+    document.getElementById('spinBtn').style.display = 'none';
+    const feedbackEl = document.getElementById('feedback');
+    feedbackEl.textContent = '';
+    feedbackEl.className = 'feedback';
+    
+    // Select random book FIRST
+    currentBook = books[Math.floor(Math.random() * books.length)];
+    
+    // Setup reels with the correct final emojis for the selected book
+    for (let i = 1; i <= 4; i++) {
+        const reel = document.getElementById(`reel${i}`);
+        const finalEmoji = currentBook.emojis[i - 1] || '❓';
+        
+        // Create reel: 🎰 -> random emojis -> correct book emoji
+        createSlotReel(reel, finalEmoji);
+        
+        // Start spinning animation on the reel itself
+        reel.classList.add('spinning');
+    }
+    
+    // Show question and answers after all animations complete
+    setTimeout(() => {
+        showQuestion();
+    }, 5000); // Wait for the longest animation (4.5s) + buffer
+}
+
+function showQuestion() {
+    document.querySelector('.question-text').textContent = 'Welches Buch stellen diese Emojis dar?';
+    
+    const options = getRandomBooks(currentBook);
+    const answersDiv = document.getElementById('answers');
+    answersDiv.innerHTML = '';
+    
+    options.forEach((book, index) => {
+        const btn = document.createElement('button');
+        btn.className = 'answer-btn';
+        btn.textContent = `${String.fromCharCode(65 + index)}. ${book.title}`;
+        btn.onclick = () => selectAnswer(book, btn);
+        answersDiv.appendChild(btn);
+    });
+}
+
+function selectAnswer(selectedBook, buttonElement) {
+    const allButtons = document.querySelectorAll('.answer-btn');
+    allButtons.forEach(btn => btn.disabled = true);
+    
+    if (selectedBook.title === currentBook.title) {
+        buttonElement.classList.add('correct');
+        score++;
+        document.getElementById('score').textContent = score;
+        const feedbackEl = document.getElementById('feedback');
+        feedbackEl.textContent = '🎉 Richtig! Gut gemacht!';
+        feedbackEl.className = 'feedback correct';
+    } else {
+        buttonElement.classList.add('incorrect');
+        // Show correct answer
+        allButtons.forEach(btn => {
+            if (btn.textContent.includes(currentBook.title)) {
+                btn.classList.add('correct');
+            }
+        });
+        const feedbackEl = document.getElementById('feedback');
+        feedbackEl.textContent = `❌ Falsch! Die richtige Antwort war "${currentBook.title}"`;
+        feedbackEl.className = 'feedback incorrect';
+    }
+    
+    setTimeout(() => {
+        if (currentRound < 10) {
+            document.getElementById('nextBtn').style.display = 'inline-block';
+        } else {
+            endGame();
+        }
+    }, 2000);
+}
+
+function nextRound() {
+    currentRound++;
+    document.getElementById('round').textContent = currentRound;
+    
+    // Reset UI
+    document.getElementById('nextBtn').style.display = 'none';
+    document.getElementById('spinBtn').style.display = 'inline-block';
+    document.getElementById('answers').innerHTML = '';
+    const feedbackEl = document.getElementById('feedback');
+    feedbackEl.textContent = '';
+    feedbackEl.className = 'feedback';
+    document.querySelector('.question-text').textContent = 'Drehe die Slots und errate das Buch!';
+    
+    // Reset slots to show 🎰
+    for (let i = 1; i <= 4; i++) {
+        const reel = document.getElementById(`reel${i}`);
+        reel.classList.remove('spinning');
+        createSlotReel(reel, '🎰');
+    }
+    
+    gameActive = false;
+}
+
+function endGame() {
+    document.getElementById('gameOver').style.display = 'block';
+    document.getElementById('finalScore').textContent = score;
+    
+    let message = '';
+    if (score >= 8) message = '🏆 Ausgezeichnet! Du bist ein Buchexperte!';
+    else if (score >= 6) message = '👍 Großartig! Du kennst deine Bücher gut!';
+    else if (score >= 4) message = '📚 Nicht schlecht! Lies weiter mehr Bücher!';
+    else message = '🤔 Zeit, öfter in die Bibliothek zu gehen!';
+    
+    document.getElementById('gameOver').innerHTML += `<p>${message}</p>`;
+}
+
+function restartGame() {
+    currentRound = 1;
+    score = 0;
+    gameActive = false;
+    
+    document.getElementById('round').textContent = currentRound;
+    document.getElementById('score').textContent = score;
+    document.getElementById('gameOver').style.display = 'none';
+    document.getElementById('spinBtn').style.display = 'inline-block';
+    document.getElementById('nextBtn').style.display = 'none';
+    document.getElementById('answers').innerHTML = '';
+    const feedbackEl = document.getElementById('feedback');
+    feedbackEl.textContent = '';
+    feedbackEl.className = 'feedback';
+    document.querySelector('.question-text').textContent = 'Drehe die Slots und errate das Buch!';
+    
+    // Reset all slots to show 🎰
+    for (let i = 1; i <= 4; i++) {
+        const reel = document.getElementById(`reel${i}`);
+        reel.classList.remove('spinning');
+        createSlotReel(reel, '🎰');
+    }
+}
+
+// Initialize game when game section becomes active
+function initializeGame() {
+    for (let i = 1; i <= 4; i++) {
+        const reel = document.getElementById(`reel${i}`);
+        if (reel) {
+            createSlotReel(reel, '🎰');
+        }
+    }
 }
